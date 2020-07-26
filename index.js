@@ -51,11 +51,14 @@ let createlead = require('./routes/leads/createlead.js');
 let updatelead = require('./routes/leads/updatelead.js');
 let deletelead = require('./routes/leads/deletelead.js');
 let listlead = require('./routes/leads/listlead.js');
+let updateleadstatus = require('./routes/leads/updateleadstatus.js');
 
 let createcontact = require('./routes/contacts/createcontact.js');
 let updatecontact = require('./routes/contacts/updatecontact.js');
 let deletecontact = require('./routes/contacts/deletecontact.js');
 let listcontacts = require('./routes/contacts/listcontacts.js');
+
+let getallusers = require('./routes/users/getallusers.js');
 
 //routes
 app.use('/login', login);
@@ -66,6 +69,7 @@ app.use('/resetpassword', resetpassword);
 //routes-leads
 app.use('/createlead', createlead);
 app.use('/updatelead', updatelead);
+app.use('/updateleadstatus', updateleadstatus);
 app.use('/deletelead', deletelead);
 app.use('/listlead', listlead);
 //routes-contacts
@@ -73,3 +77,6 @@ app.use('/createcontact', createcontact);
 app.use('/updatecontact', updatecontact);
 app.use('/deletecontact', deletecontact);
 app.use('/listcontacts', listcontacts);
+
+//routes-users
+app.use('/getallusers', getallusers);

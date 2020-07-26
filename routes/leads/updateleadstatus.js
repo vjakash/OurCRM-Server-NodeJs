@@ -33,33 +33,36 @@ let mailOptions = {
 let authenticate = require('../../middlewares/authentication.js');
 let accessVerification = require('../../middlewares/accessVerification.js');
 
-// createlead route.
-router.post('/', [authenticate, accessVerification("create")], async(req, res) => {
-    let { owner, firstName, phone, lastName, company, email, leadStatus, ownerName, title } = req.body;
-    if (owner === undefined || company === undefined || firstName === undefined || phone === undefined || email === undefined || leadStatus === undefined) {
+// updateleadstatus route.
+router.put('/', [authenticate, accessVerification("update")], async(req, res) => {
+    let { leadId, leadStatus } = req.body;
+    if (leadId === undefined || leadStatus === undefined) {
         res.status(400).json({
             message: 'Required Fields missing'
         });
     } else {
         let client = await mongodb.connect(dbURL, { useUnifiedTopology: true }).catch(err => { throw err });
         let db = client.db('crm');
-        req.body.createdOn = new Date();
-        await db.collection('leads').insertOne(req.body).catch(err => { throw err });
+        leadId = new ObjectId(leadId);
+        let data = await db.collection('leads').find({ '_id': leadId }).toArray().catch(err => { throw err });
+        await db.collection('leads').updateOne({ '_id': leadId }, { $set: { leadStatus } }).catch(err => { throw err });
+        console.log(data);
         let managers = await db.collection('users').find({ userType: "manager" }).toArray().catch(err => { throw err; });
         for (let i of managers) {
             mailOptions.to = i.email;
-            mailOptions.subject = 'Lead added';
-            mailOptions.html = `<html><body><h1>New lead added</h1>
-            <h3>Details of new lead</h3>
-            <h5>Lead Owner Email: ${owner}</h5>
-            <h5>Lead Owner Name: ${ownerName}</h5>
-            <h5>First Name : ${firstName}</h5>
-            <h5>Last Name : ${lastName}</h5>
-            <h5>Email : ${email}</h5>
-            <h5>Company : ${company}</h5>
-            <h5>Title : ${title}</h5>
-            <h5>Phone Number : ${phone}</h5>
-            <h5>Lead Status : ${leadStatus}</h5>`;
+            mailOptions.subject = 'Lead status update';
+            mailOptions.html = `<html><body><h1>Lead Status Updated</h1>
+            <p>Lead status updated from <b>${data[0].leadStatus}</b> to <b>${leadStatus}</p>
+            <h3>Details of lead</h3>
+            <h5>Lead Owner Email: ${data[0].owner}</h5>
+            <h5>Lead Owner Name: ${data[0].ownerName}</h5>
+            <h5>First Name : ${data[0].firstName}</h5>
+            <h5>Last Name : ${data[0].lastName}</h5>
+            <h5>Email : ${data[0].email}</h5>
+            <h5>Company : ${data[0].company}</h5>
+            <h5>Title : ${data[0].title}</h5>
+            <h5>Phone Number : ${data[0].phone}</h5>
+            <h5>Lead Status : ${data[0].leadStatus}</h5>`;
             transporter.sendMail(mailOptions, function(error, info) {
                 if (error) {
                     console.log(error);
@@ -72,17 +75,18 @@ router.post('/', [authenticate, accessVerification("create")], async(req, res) =
         // console.log(admins);
         for (let i of admins) {
             mailOptions.to = i.email;
-            mailOptions.subject = 'Lead added';
-            mailOptions.html = `<html><body><h1>New lead added</h1>
-            <h3>Details of new lead</h3>
-            <h5>Lead Owner Email: ${owner}</h5>
-            <h5>Lead Owner Name: ${ownerName}</h5>
-            <h5>First Name : ${firstName}</h5>
-            <h5>Last Name : ${lastName}</h5>
-            <h5>Email : ${email}</h5>
-            <h5>Company : ${company}</h5>
-            <h5>Title : ${title}</h5>
-            <h5>Phone Number : ${phone}</h5>
+            mailOptions.subject = 'Lead status update';
+            mailOptions.html = `<html><body><h1>New Status updated</h1>
+            <p>Lead status updated from <b>${data[0].leadStatus}</b> to <b>${leadStatus}</p>
+            <h3>Details of lead</h3>
+            <h5>Lead Owner Email: ${data[0].owner}</h5>
+            <h5>Lead Owner Name: ${data[0].ownerName}</h5>
+            <h5>First Name : ${data[0].firstName}</h5>
+            <h5>Last Name : ${data[0].lastName}</h5>
+            <h5>Email : ${data[0].email}</h5>
+            <h5>Company : ${data[0].company}</h5>
+            <h5>Title : ${data[0].title}</h5>
+            <h5>Phone Number : ${data[0].phone}</h5>
             <h5>Lead Status : ${leadStatus}</h5>`;
             transporter.sendMail(mailOptions, function(error, info) {
                 if (error) {
@@ -94,7 +98,7 @@ router.post('/', [authenticate, accessVerification("create")], async(req, res) =
         }
         client.close();
         res.status(200).json({
-            message: 'Lead created'
+            message: 'Lead Status updated'
         });
     }
 });

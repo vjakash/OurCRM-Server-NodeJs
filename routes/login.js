@@ -34,7 +34,8 @@ router.post("/", async(req, res) => {
                 bcrypt.compare(password, data.password, function(err, result) {
                     if (err) throw err;
                     if (result) {
-                        jwt.sign({ id: data["_id"], email: data["email"], userType: data["userType"], accessRights: data['accessRights'] }, 'qwertyuiopasdfghjkl', { expiresIn: '10h' }, function(err, token) {
+                        // jwt.sign({ id: data["_id"], email: data["email"], userType: data["userType"], accessRights: data['accessRights'] }, 'qwertyuiopasdfghjkl', { expiresIn: '10h' }, function(err, token) {
+                        jwt.sign({ id: data["_id"], email: data["email"], userType: data["userType"], accessRights: data['accessRights'] }, 'qwertyuiopasdfghjkl', function(err, token) {
                             if (err) throw err;
                             client.close();
                             console.log("login successfull")

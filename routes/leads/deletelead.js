@@ -16,8 +16,8 @@ let authenticate = require('../../middlewares/authentication.js');
 let accessVerification = require('../../middlewares/accessVerification.js');
 
 // deletelead route.
-router.delete('/', [authenticate, accessVerification("delete")], async(req, res) => {
-    let { leadId } = req.body;
+router.delete('/:id', [authenticate, accessVerification("delete")], async(req, res) => {
+    let leadId = req.params.id;
     if (leadId === undefined) {
         res.status(400).json({
             message: 'Required Fields missing'

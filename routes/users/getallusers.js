@@ -15,25 +15,14 @@ let dbURL = process.env.dbURL;
 let authenticate = require('../../middlewares/authentication.js');
 let accessVerification = require('../../middlewares/accessVerification.js');
 
-// listlead route.
+// getallusers route.
 router.get('/', [authenticate, accessVerification("view")], async(req, res) => {
     let client = await mongodb.connect(dbURL, { useUnifiedTopology: true }).catch(err => { throw err });
     let db = client.db('crm');
-    let leads = await db.collection("leads").find().toArray().catch(err => { throw err; });
+    let users = await db.collection("users").find({}, { projection: { _id: 0, email: 1, firstName: 1, lastName: 1 } }).toArray().catch(err => { throw err; });
     client.close();
     res.status(200).json({
-        leads
-    });
-});
-router.get('/:id', [authenticate, accessVerification("view")], async(req, res) => {
-    let leadId = req.params.id;
-    leadId = new ObjectId(leadId);
-    let client = await mongodb.connect(dbURL, { useUnifiedTopology: true }).catch(err => { throw err });
-    let db = client.db('crm');
-    let lead = await db.collection("leads").find({ "_id": leadId }).toArray().catch(err => { throw err; });
-    client.close();
-    res.status(200).json({
-        lead
+        users
     });
 });
 
