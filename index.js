@@ -59,6 +59,8 @@ let deletecontact = require('./routes/contacts/deletecontact.js');
 let listcontacts = require('./routes/contacts/listcontacts.js');
 
 let getallusers = require('./routes/users/getallusers.js');
+let updateaccessrights = require('./routes/users/updateaccessrights.js');
+let deleteuser = require('./routes/users/deleteuser.js');
 
 //routes
 app.use('/login', login);
@@ -80,3 +82,5 @@ app.use('/listcontacts', listcontacts);
 
 //routes-users
 app.use('/getallusers', getallusers);
+app.use('/updateaccessrights', updateaccessrights);
+app.use('/deleteuser', deleteuser);

@@ -27,7 +27,9 @@ router.post("/", async(req, res) => {
         });
     } else {
         let client = await mongodb.connect(dbURL, { useUnifiedTopology: true }).catch(err => { throw err; });
-        let db = client.db('crm');
+        let company = email.split("@");
+        company = company[1].split(".")[0];
+        let db = client.db(company);
         let data = await db.collection('users').findOne({ email }).catch(err => { throw err; });
         if (data) {
             if (data.accountVerified) {
@@ -43,7 +45,9 @@ router.post("/", async(req, res) => {
                                 message: "login successfull",
                                 token,
                                 email,
-                                userType: data["userType"]
+                                userType: data["userType"],
+                                isRootUser: data["isRootUser"],
+                                company: data["company"]
                             })
                         });
                     } else {

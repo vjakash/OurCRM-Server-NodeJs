@@ -34,7 +34,7 @@ let authenticate = require('../../middlewares/authentication.js');
 let accessVerification = require('../../middlewares/accessVerification.js');
 
 // updateleadstatus route.
-router.put('/', [authenticate, accessVerification("update")], async(req, res) => {
+router.put('/', [authenticate, accessVerification("edit")], async(req, res) => {
     let { leadId, leadStatus } = req.body;
     if (leadId === undefined || leadStatus === undefined) {
         res.status(400).json({
@@ -42,12 +42,16 @@ router.put('/', [authenticate, accessVerification("update")], async(req, res) =>
         });
     } else {
         let client = await mongodb.connect(dbURL, { useUnifiedTopology: true }).catch(err => { throw err });
-        let db = client.db('crm');
+        let company = req.email.split("@");
+        company = company[1].split(".")[0];
+        let db = client.db(company);
         leadId = new ObjectId(leadId);
         let data = await db.collection('leads').find({ '_id': leadId }).toArray().catch(err => { throw err });
         await db.collection('leads').updateOne({ '_id': leadId }, { $set: { leadStatus } }).catch(err => { throw err });
-        console.log(data);
-        let managers = await db.collection('users').find({ userType: "manager" }).toArray().catch(err => { throw err; });
+        // console.log(data);
+        let ownerData = await db.collection('users').find({ email: data[0].owner }).toArray().catch(err => { throw err });
+        // console.log(ownerData);
+        let managers = await db.collection('users').find({ email: ownerData[0].manager }).toArray().catch(err => { throw err; });
         for (let i of managers) {
             mailOptions.to = i.email;
             mailOptions.subject = 'Lead status update';
@@ -67,7 +71,7 @@ router.put('/', [authenticate, accessVerification("update")], async(req, res) =>
                 if (error) {
                     console.log(error);
                 } else {
-                    console.log('Email sent: ' + info.response);
+                    console.log('lead status sent to manager  Email info: ' + info.response);
                 }
             });
         }
@@ -92,7 +96,7 @@ router.put('/', [authenticate, accessVerification("update")], async(req, res) =>
                 if (error) {
                     console.log(error);
                 } else {
-                    console.log('Email sent: ' + info.response);
+                    console.log('lead status sent to admin  Email info ' + info.response);
                 }
             });
         }

@@ -38,7 +38,9 @@ router.post('/', async(req, res) => {
     let { email } = req.body;
     console.log(email);
     let client = await mongodb.connect(dbURL, { useUnifiedTopology: true }).catch(err => { throw err; });
-    let db = client.db('crm');
+    let company = email.split("@");
+    company = company[1].split(".")[0];
+    let db = client.db(company);
     let data = await db.collection('users').findOne({ email }).catch(err => { throw err });
     // console.log(data);
     if (data) {

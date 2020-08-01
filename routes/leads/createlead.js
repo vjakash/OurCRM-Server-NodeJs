@@ -42,7 +42,9 @@ router.post('/', [authenticate, accessVerification("create")], async(req, res) =
         });
     } else {
         let client = await mongodb.connect(dbURL, { useUnifiedTopology: true }).catch(err => { throw err });
-        let db = client.db('crm');
+        let company = req.email.split("@");
+        company = company[1].split(".")[0];
+        let db = client.db(company);
         req.body.createdOn = new Date();
         await db.collection('leads').insertOne(req.body).catch(err => { throw err });
         let managers = await db.collection('users').find({ userType: "manager" }).toArray().catch(err => { throw err; });

@@ -20,7 +20,9 @@ router.post('/', async(req, res) => {
     let { email, password, passwordResetToken } = req.body;
     // console.log('from resetpassword', email, passwordResetToken)
     let client = await mongodb.connect(dbURL, { useUnifiedTopology: true }).catch(err => { throw err });
-    let db = client.db('crm');
+    let company = email.split("@");
+    company = company[1].split(".")[0];
+    let db = client.db(company);
     let data = await db.collection('users').findOne({ email, passwordResetToken }).catch(err => { throw err });
     if (data) {
         let saltRounds = 10;

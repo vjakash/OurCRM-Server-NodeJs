@@ -24,7 +24,9 @@ router.delete('/:id', [authenticate, accessVerification("delete")], async(req, r
         });
     } else {
         let client = await mongodb.connect(dbURL).catch(err => { throw err });
-        let db = client.db('crm');
+        let company = req.email.split("@");
+        company = company[1].split(".")[0];
+        let db = client.db(company);
         leadId = new ObjectId(leadId);
         delete req.body.leadId;
         await db.collection('leads').deleteOne({ "_id": leadId }).catch(err => { throw err });

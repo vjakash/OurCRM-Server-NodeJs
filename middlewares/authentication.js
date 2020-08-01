@@ -12,7 +12,8 @@ async function authenticate(req, res, next) {
                     message: 'session expired'
                 });
             } else {
-                console.log(decode);
+                // console.log(decode);
+                req.email = decode.email;
                 req.userType = decode.userType;
                 if (req.accessRights === []) {
                     req.accessRights = ["view"]

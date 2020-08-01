@@ -24,7 +24,10 @@ router.post('/', [authenticate, accessVerification("create")], async(req, res) =
         });
     } else {
         let client = await mongodb.connect(dbURL).catch(err => { throw err });
-        let db = client.db('crm');
+        let company = req.email.split("@");
+        company = company[1].split(".")[0];
+        let db = client.db(company);
+        req.body.createdOn = new Date();
         await db.collection('contacts').insertOne(req.body).catch(err => { throw err });
         client.close();
         res.status(200).json({

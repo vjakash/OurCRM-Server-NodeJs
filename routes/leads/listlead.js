@@ -18,7 +18,9 @@ let accessVerification = require('../../middlewares/accessVerification.js');
 // listlead route.
 router.get('/', [authenticate, accessVerification("view")], async(req, res) => {
     let client = await mongodb.connect(dbURL, { useUnifiedTopology: true }).catch(err => { throw err });
-    let db = client.db('crm');
+    let company = req.email.split("@");
+    company = company[1].split(".")[0];
+    let db = client.db(company);
     let leads = await db.collection("leads").find().toArray().catch(err => { throw err; });
     client.close();
     res.status(200).json({
@@ -29,7 +31,9 @@ router.get('/:id', [authenticate, accessVerification("view")], async(req, res) =
     let leadId = req.params.id;
     leadId = new ObjectId(leadId);
     let client = await mongodb.connect(dbURL, { useUnifiedTopology: true }).catch(err => { throw err });
-    let db = client.db('crm');
+    let company = req.email.split("@");
+    company = company[1].split(".")[0];
+    let db = client.db(company);
     let lead = await db.collection("leads").find({ "_id": leadId }).toArray().catch(err => { throw err; });
     client.close();
     res.status(200).json({
