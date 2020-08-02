@@ -68,6 +68,7 @@ router.post('/', async(req, res) => {
                 req.body.accountVerified = false;
                 req.body.isRootUser = true;
                 req.body.dbName = email;
+                delete req.body.confirmPassword;
                 await db.collection('users').insertOne(req.body).catch(err => { throw err; });
                 let buf = await require('crypto').randomBytes(32);
                 let token = buf.toString('hex');

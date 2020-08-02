@@ -29,6 +29,7 @@ router.get('/', [authenticate, accessVerification("view")], async(req, res) => {
 });
 router.get('/:id', [authenticate, accessVerification("view")], async(req, res) => {
     let leadId = req.params.id;
+    // console.log(req.params);
     leadId = new ObjectId(leadId);
     let client = await mongodb.connect(dbURL, { useUnifiedTopology: true }).catch(err => { throw err });
     let company = req.email.split("@");
