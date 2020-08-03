@@ -49,6 +49,18 @@ router.post('/', [authenticate, permission(["admin", "manager"])], async(req, re
         // console.log(data);
         let ownerData = await db.collection('users').find({ email: data[0].owner }).toArray().catch(err => { throw err });
         // console.log(ownerData);
+        mailOptions.to = data[0].email;
+        mailOptions.subject = 'Order Cancelled';
+        mailOptions.html = `<html><body><h1>Order Cancelled </h1>
+        <p>The manager has cancelled the order </p>
+        <p>For further details contact : ${ownerData[0].managerName} (${ownerData[0].manager})`;
+        transporter.sendMail(mailOptions, function(error, info) {
+            if (error) {
+                console.log(error);
+            } else {
+                console.log('cancelled lead sent to admin  Email info ' + info.response);
+            }
+        });
         mailOptions.to = data[0].owner;
         mailOptions.subject = 'Order Cancelled';
         mailOptions.html = `<html><body><h1>Order Cancelled </h1>
