@@ -51,7 +51,7 @@ router.post('/', async(req, res) => {
         let db = client.db(company);
         let db1 = client.db('crm-root');
         let data1 = await db1.collection('users').findOne({ company }).catch((err) => { throw err; });
-        if (data1) {
+        if (!data1) {
             await db1.collection('users').insertOne({ email, company, firstName, lastName }).catch(err => { throw err; });
             let data = await db.collection('users').findOne({ email }).catch((err) => { throw err; });
             if (data) {
@@ -71,7 +71,7 @@ router.post('/', async(req, res) => {
                     req.body.password = hash;
                     req.body.accountVerified = false;
                     req.body.isRootUser = true;
-                    req.body.dbName = email;
+                    req.body.dbName = company;
                     delete req.body.confirmPassword;
                     await db.collection('users').insertOne(req.body).catch(err => { throw err; });
                     let buf = await require('crypto').randomBytes(32);

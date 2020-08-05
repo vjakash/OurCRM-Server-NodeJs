@@ -70,6 +70,13 @@ let updateprofile = require('./routes/users/updateprofile.js');
 let changepassword = require('./routes/users/changepassword.js');
 let updateusertype = require('./routes/users/updateusertype.js');
 
+let createservicerequest = require('./routes/service-requests/createservicerequest.js');
+let listservicerequests = require('./routes/service-requests/listservicerequests.js');
+let deleteservicerequest = require('./routes/service-requests/deleteservicerequest.js');
+let updateservicerequest = require('./routes/service-requests/updateservicerequest.js');
+let updateservicerequeststatus = require('./routes/service-requests/updateservicerequeststatus.js');
+
+
 //routes
 app.use('/login', login);
 app.use('/register', register);
@@ -100,3 +107,10 @@ app.use('/deleteuser', deleteuser);
 app.use('/updateprofile', updateprofile);
 app.use('/changepassword', changepassword);
 app.use('/updateusertype', updateusertype);
+
+//routes-serviceRequests
+app.use('/createservicerequest', createservicerequest);
+app.use('/listservicerequests', listservicerequests);
+app.use('/deleteservicerequest', deleteservicerequest);
+app.use('/updateservicerequest', updateservicerequest);
+app.use('/updateservicerequeststatus', updateservicerequeststatus);
